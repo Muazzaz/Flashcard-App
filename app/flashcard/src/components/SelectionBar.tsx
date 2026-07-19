@@ -17,11 +17,12 @@ import { AppColors, Colors, Radii, Shadows, Typography } from '@/constants/theme
 export function SelectionBar() {
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
-  const { triggerSuccess, triggerSelection } = useHaptics();
+  const { triggerSuccess, triggerWarning, triggerSelection } = useHaptics();
 
   const isMultiSelectMode = useWordStore((s) => s.isMultiSelectMode);
   const selectedIds = useWordStore((s) => s.selectedIds);
   const bulkMarkAsMastered = useWordStore((s) => s.bulkMarkAsMastered);
+  const bulkDeleteWords = useWordStore((s) => s.bulkDeleteWords);
   const clearSelection = useWordStore((s) => s.clearSelection);
 
   if (!isMultiSelectMode) return null;
@@ -30,6 +31,12 @@ export function SelectionBar() {
     if (selectedIds.length === 0) return;
     triggerSuccess();
     bulkMarkAsMastered(selectedIds);
+  };
+
+  const handleDelete = () => {
+    if (selectedIds.length === 0) return;
+    triggerWarning();
+    bulkDeleteWords(selectedIds);
   };
 
   const handleCancel = () => {
@@ -60,7 +67,23 @@ export function SelectionBar() {
         </Pressable>
 
         <Pressable
+          onPress={handleDelete}
+          disabled={selectedIds.length === 0}
+          style={[
+            styles.deleteButton,
+            {
+              backgroundColor: selectedIds.length > 0 ? (isDark ? 'rgba(239, 68, 68, 0.2)' : '#FEE2E2') : 'transparent',
+            },
+          ]}
+        >
+          <Text style={[styles.deleteText, { color: selectedIds.length > 0 ? AppColors.danger : AppColors.textMuted }]}>
+            🗑️ Delete
+          </Text>
+        </Pressable>
+
+        <Pressable
           onPress={handleMastered}
+          disabled={selectedIds.length === 0}
           style={[
             styles.masteredButton,
             {
@@ -74,7 +97,7 @@ export function SelectionBar() {
           ]}
         >
           <Text style={styles.masteredText}>
-            ★ Mark as Mastered
+            ★ Done
           </Text>
         </Pressable>
       </View>

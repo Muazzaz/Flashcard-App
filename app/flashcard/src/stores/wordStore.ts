@@ -64,6 +64,7 @@ interface WordStore {
     banglaMeaning?: string | null
   ) => void;
   removeWord: (wordId: string) => void;
+  bulkDeleteWords: (wordIds: string[]) => void;
 
   // ---- Selection Actions ----
   toggleSelectWord: (wordId: string) => void;
@@ -209,6 +210,14 @@ export const useWordStore = create<WordStore>()(
         set((state) => ({
           words: state.words.filter((w) => w.id !== wordId),
           selectedIds: state.selectedIds.filter((id) => id !== wordId),
+        }));
+      },
+
+      bulkDeleteWords: (wordIds: string[]) => {
+        set((state) => ({
+          words: state.words.filter((w) => !wordIds.includes(w.id)),
+          selectedIds: [],
+          isMultiSelectMode: false,
         }));
       },
 
