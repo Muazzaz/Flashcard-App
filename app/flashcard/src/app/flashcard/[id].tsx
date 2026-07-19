@@ -470,6 +470,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
+    padding: 24,
     gap: 16,
   },
   cardScrollContent: {
@@ -477,8 +478,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   cardContentPadded: {
-    paddingTop: 4,
-    paddingBottom: 32,
+    paddingHorizontal: 22,
+    paddingTop: 20,
+    paddingBottom: 48,
   },
   wordMain: {
     ...Typography.largeTitle,

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Platform, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { Tabs } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useWordStore } from '@/stores/wordStore';
 import { AppColors, StateTheme, Typography } from '@/constants/theme';
 import type { WordState } from '@/types';
@@ -48,6 +49,10 @@ const tabStyles = StyleSheet.create({
 export default function TabLayout() {
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
+  const insets = useSafeAreaInsets();
+
+  const bottomInset = insets.bottom > 0 ? insets.bottom : (Platform.OS === 'android' ? 14 : 10);
+  const tabHeight = (Platform.OS === 'ios' ? 60 : 58) + bottomInset;
 
   const words = useWordStore((s) => s.words);
 
@@ -77,9 +82,9 @@ export default function TabLayout() {
           backgroundColor: isDark ? AppColors.surfaceDark : AppColors.cardLight,
           borderTopColor: isDark ? AppColors.borderDark : AppColors.borderLight,
           borderTopWidth: StyleSheet.hairlineWidth,
-          height: Platform.OS === 'ios' ? 88 : 68,
+          height: tabHeight,
           paddingTop: 6,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 10,
+          paddingBottom: bottomInset,
         },
         tabBarLabelStyle: {
           ...Typography.caption2,
