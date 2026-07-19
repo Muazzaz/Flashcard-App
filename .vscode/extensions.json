@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        "unifiedjs.vscode-mdx",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "vscode-icons-team.vscode-icons"
+    ],
+    "unwantedRecommendations": [
+      // Optionally block extensions you don't want
+    
+    ]
+  }
