@@ -1,0 +1,10 @@
+name = "vocab-api"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Local development secrets go in .dev.vars file (not committed)
+# Production secrets are set via: wrangler secret put SECRET_NAME
+
+# [vars]
+# Non-secret environment variables can be placed here

@@ -1,0 +1,25 @@
+{
+  "name": "vocab-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push"
+  },
+  "dependencies": {
+    "hono": "^4.7.0",
+    "@neondatabase/serverless": "^0.10.0",
+    "drizzle-orm": "^0.45.2",
+    "better-auth": "^1.2.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0",
+    "drizzle-kit": "^0.31.4",
+    "typescript": "^5.7.0",
+    "@cloudflare/workers-types": "^5.0.0"
+  }
+}

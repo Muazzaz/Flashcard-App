@@ -1,56 +1,89 @@
-# Welcome to your Expo app 👋
+# Vocab App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Agency-First Vocabulary Flashcard App — a monorepo containing:
 
-## Get started
+| Package | Path | Description |
+|---|---|---|
+| **flashcard** | `flashcard/` | React Native + Expo Router mobile app |
+| **backend** | `backend/` | Cloudflare Workers API (Hono + Drizzle + Better Auth) |
 
-1. Install dependencies
+## Philosophy
 
-   ```bash
-   npm install
-   ```
+This app rejects algorithmic spaced repetition (no SM-2, no FSRS). The user controls all state transitions through a strict 4-state machine:
 
-2. Start the app
+```
+NEW → (Remembered) → MASTERED   [Fast-Track]
+NEW → (Forgot)     → LEARNING
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+LEARNING → (Remembered) → REVIEWING
+REVIEWING → (Remembered) → MASTERED
+ANY STATE → (Forgot)     → LEARNING
+ANY STATE → (Reset)      → NEW
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Getting Started
 
-### Other setup steps
+### Prerequisites
+- Node.js 18+
+- Expo CLI (`npm install -g expo-cli`)
+- Wrangler CLI (`npm install -g wrangler`)
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+### Install all dependencies
 
-## Learn more
+```bash
+# From the repo root
+npm install              # installs workspace root
+cd flashcard && npx expo install
+cd ../backend && npm install
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### Run the mobile app
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+cd flashcard
+npx expo start --android    # Android
+npx expo start --ios        # iOS
+```
 
-## Join the community
+### Run the backend (locally)
 
-Join our community of developers creating universal apps.
+```bash
+cd backend
+cp .env.example .dev.vars   # fill in your secrets
+npx wrangler dev
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Deploy the backend
+
+```bash
+cd backend
+npx wrangler secret put DATABASE_URL
+npx wrangler secret put BETTER_AUTH_SECRET
+npx wrangler secret put GOOGLE_CLIENT_ID
+npx wrangler secret put GOOGLE_CLIENT_SECRET
+npx wrangler deploy
+```
+
+### Database migrations
+
+```bash
+cd backend
+npx drizzle-kit generate    # generate SQL from schema
+npx drizzle-kit push        # push to Neon DB
+```
+
+## Environment Variables
+
+See [`backend/.env.example`](backend/.env.example) and [`flashcard/.env.example`](flashcard/.env.example) for required secrets.
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Mobile | React Native + Expo Router (TypeScript) |
+| Animations | react-native-reanimated v4 |
+| State | Zustand + AsyncStorage (local-first) |
+| API | Hono on Cloudflare Workers |
+| Database | Neon DB (Serverless PostgreSQL) via Drizzle ORM |
+| Auth | Better Auth (Google OAuth + email/password) |
+| Dictionary | Free Dictionary API (dictionaryapi.dev) |
