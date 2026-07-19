@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Platform, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { Tabs } from 'expo-router';
 import { useWordStore } from '@/stores/wordStore';
@@ -49,10 +49,23 @@ export default function TabLayout() {
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
 
-  const newCount = useWordStore((s) => s.getCountByState('NEW'));
-  const learningCount = useWordStore((s) => s.getCountByState('LEARNING'));
-  const reviewingCount = useWordStore((s) => s.getCountByState('REVIEWING'));
-  const masteredCount = useWordStore((s) => s.getCountByState('MASTERED'));
+  const words = useWordStore((s) => s.words);
+
+  const { newCount, learningCount, reviewingCount, masteredCount } = useMemo(() => {
+    let newCount = 0;
+    let learningCount = 0;
+    let reviewingCount = 0;
+    let masteredCount = 0;
+
+    for (const w of words) {
+      if (w.currentState === 'NEW') newCount++;
+      else if (w.currentState === 'LEARNING') learningCount++;
+      else if (w.currentState === 'REVIEWING') reviewingCount++;
+      else if (w.currentState === 'MASTERED') masteredCount++;
+    }
+
+    return { newCount, learningCount, reviewingCount, masteredCount };
+  }, [words]);
 
   return (
     <Tabs

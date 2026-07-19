@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useWordStore } from '@/stores/wordStore';
 import { fetchDefinitionDirect } from '@/services/api';
 import type { Word, WordState, WordSection, ProgressAction } from '@/types';
@@ -10,12 +10,18 @@ import { groupWordsAlphabetically } from '@/types';
  * and handles lazy-loading definitions from the Free Dictionary API.
  */
 export function useFlashcards(state: WordState) {
-  const words = useWordStore((s) => s.getWordsByState(state));
-  const count = useWordStore((s) => s.getCountByState(state));
+  const allWords = useWordStore((s) => s.words);
   const updateWordState = useWordStore((s) => s.updateWordState);
   const bulkMarkAsMastered = useWordStore((s) => s.bulkMarkAsMastered);
 
-  const sections: WordSection[] = groupWordsAlphabetically(words);
+  const words = useMemo(() => {
+    return allWords
+      .filter((w) => w.currentState === state)
+      .sort((a, b) => a.wordText.localeCompare(b.wordText));
+  }, [allWords, state]);
+
+  const sections: WordSection[] = useMemo(() => groupWordsAlphabetically(words), [words]);
+  const count = words.length;
 
   return {
     words,
@@ -31,7 +37,7 @@ export function useFlashcards(state: WordState) {
  * Lazy-loads the definition from the Free Dictionary API if missing.
  */
 export function useWordDetail(wordId: string) {
-  const word = useWordStore((s) => s.getWordById(wordId));
+  const word = useWordStore(useCallback((s) => s.words.find((w) => w.id === wordId), [wordId]));
   const setWordDefinition = useWordStore((s) => s.setWordDefinition);
   const updateWordState = useWordStore((s) => s.updateWordState);
   const [isLoadingDefinition, setIsLoadingDefinition] = useState(false);
