@@ -130,15 +130,24 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingHorizontal: 10,
   },
   cancelText: {
     ...Typography.callout,
     fontWeight: '600',
   },
+  deleteButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: Radii.lg,
+  },
+  deleteText: {
+    ...Typography.subheadline,
+    fontWeight: '700',
+  },
   masteredButton: {
     paddingVertical: 10,
-    paddingHorizontal: 18,
+    paddingHorizontal: 14,
     borderRadius: Radii.lg,
   },
   masteredText: {
