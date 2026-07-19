@@ -55,7 +55,7 @@ export function FlashcardItem({ word, index }: FlashcardItemProps) {
       toggleSelectWord(word.id);
     } else {
       triggerSelection();
-      router.push(`/flashcard/${word.id}`);
+      router.push(`/flashcard/${word.id}` as any);
     }
   }, [isMultiSelectMode, word.id, router, triggerSelection, triggerSoft, toggleSelectWord]);
 

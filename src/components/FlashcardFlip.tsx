@@ -53,8 +53,6 @@ export function FlashcardFlip({
       stiffness: 85,
       mass: 0.9,
       overshootClamping: false,
-      restDisplacementThreshold: 0.01,
-      restSpeedThreshold: 0.01,
     });
 
     onFlip?.(willBeFlipped);
