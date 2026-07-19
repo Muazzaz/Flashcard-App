@@ -68,95 +68,98 @@ export function FlashcardItem({ word, index }: FlashcardItemProps) {
   }, [isMultiSelectMode, word.id, triggerLongPress, setMultiSelectMode, toggleSelectWord]);
 
   return (
-    <AnimatedPressable
+    <Animated.View
       entering={FadeIn.delay(index * 30).duration(250)}
       exiting={FadeOutLeft.duration(300)}
       layout={LinearTransition.springify().damping(18).stiffness(120)}
-      onPress={handlePress}
-      onLongPress={handleLongPress}
-      onPressIn={() => {
-        scale.value = withSpring(0.97, { damping: 15, stiffness: 200 });
-      }}
-      onPressOut={() => {
-        scale.value = withSpring(1, { damping: 15, stiffness: 200 });
-      }}
-      style={[
-        styles.container,
-        scaleStyle,
-        {
-          backgroundColor: isDark ? AppColors.cardDark : AppColors.cardLight,
-          borderColor: isSelected
-            ? stateTheme.color
-            : isDark
-              ? AppColors.borderDark
-              : AppColors.borderLight,
-          borderWidth: isSelected ? 1.5 : StyleSheet.hairlineWidth,
-        },
-        Shadows.sm,
-      ]}
     >
-      {/* State color indicator bar */}
-      <View style={[styles.stateBar, { backgroundColor: stateTheme.color }]} />
+      <AnimatedPressable
+        onPress={handlePress}
+        onLongPress={handleLongPress}
+        onPressIn={() => {
+          scale.value = withSpring(0.97, { damping: 15, stiffness: 200 });
+        }}
+        onPressOut={() => {
+          scale.value = withSpring(1, { damping: 15, stiffness: 200 });
+        }}
+        style={[
+          styles.container,
+          scaleStyle,
+          {
+            backgroundColor: isDark ? AppColors.cardDark : AppColors.cardLight,
+            borderColor: isSelected
+              ? stateTheme.color
+              : isDark
+                ? AppColors.borderDark
+                : AppColors.borderLight,
+            borderWidth: isSelected ? 1.5 : StyleSheet.hairlineWidth,
+          },
+          Shadows.sm,
+        ]}
+      >
+        {/* State color indicator bar */}
+        <View style={[styles.stateBar, { backgroundColor: stateTheme.color }]} />
 
-      {/* Multi-select checkbox */}
-      {isMultiSelectMode && (
-        <View
-          style={[
-            styles.checkbox,
-            {
-              backgroundColor: isSelected ? stateTheme.color : 'transparent',
-              borderColor: isSelected
-                ? stateTheme.color
-                : AppColors.textMuted,
-            },
-          ]}
-        >
-          {isSelected && <Text style={styles.checkmark}>✓</Text>}
-        </View>
-      )}
+        {/* Multi-select checkbox */}
+        {isMultiSelectMode && (
+          <View
+            style={[
+              styles.checkbox,
+              {
+                backgroundColor: isSelected ? stateTheme.color : 'transparent',
+                borderColor: isSelected
+                  ? stateTheme.color
+                  : AppColors.textMuted,
+              },
+            ]}
+          >
+            {isSelected && <Text style={styles.checkmark}>✓</Text>}
+          </View>
+        )}
 
-      {/* Word content */}
-      <View style={styles.content}>
-        <Text
-          style={[
-            styles.wordText,
-            { color: isDark ? Colors.dark.text : Colors.light.text },
-          ]}
-          numberOfLines={1}
-        >
-          {word.wordText}
-        </Text>
-
-        {word.definition && (
+        {/* Word content */}
+        <View style={styles.content}>
           <Text
-            style={[styles.preview, { color: AppColors.textMuted }]}
+            style={[
+              styles.wordText,
+              { color: isDark ? Colors.dark.text : Colors.light.text },
+            ]}
             numberOfLines={1}
           >
-            {word.definition.split('\n')[0].replace(/^\([^)]+\)\s*/, '')}
+            {word.wordText}
           </Text>
-        )}
-      </View>
 
-      {/* State badge */}
-      {!isMultiSelectMode && (
-        <View style={[styles.badge, { backgroundColor: stateTheme.lightBg }]}>
-          <Text style={[styles.badgeText, { color: stateTheme.color }]}>
-            {word.currentState === 'NEW'
-              ? '●'
-              : word.currentState === 'MASTERED'
-                ? '★'
-                : word.currentState === 'LEARNING'
-                  ? '◐'
-                  : '◑'}
-          </Text>
+          {word.definition && (
+            <Text
+              style={[styles.preview, { color: AppColors.textMuted }]}
+              numberOfLines={1}
+            >
+              {word.definition.split('\n')[0].replace(/^\([^)]+\)\s*/, '')}
+            </Text>
+          )}
         </View>
-      )}
 
-      {/* Chevron */}
-      {!isMultiSelectMode && (
-        <Text style={[styles.chevron, { color: AppColors.textMuted }]}>›</Text>
-      )}
-    </AnimatedPressable>
+        {/* State badge */}
+        {!isMultiSelectMode && (
+          <View style={[styles.badge, { backgroundColor: stateTheme.lightBg }]}>
+            <Text style={[styles.badgeText, { color: stateTheme.color }]}>
+              {word.currentState === 'NEW'
+                ? '●'
+                : word.currentState === 'MASTERED'
+                  ? '★'
+                  : word.currentState === 'LEARNING'
+                    ? '◐'
+                    : '◑'}
+            </Text>
+          </View>
+        )}
+
+        {/* Chevron */}
+        {!isMultiSelectMode && (
+          <Text style={[styles.chevron, { color: AppColors.textMuted }]}>›</Text>
+        )}
+      </AnimatedPressable>
+    </Animated.View>
   );
 }
 
