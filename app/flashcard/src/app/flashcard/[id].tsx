@@ -105,7 +105,7 @@ export default function FlashcardDetailScreen() {
       {/* Flip Card */}
       <View style={styles.cardWrapper}>
         <FlashcardFlip
-          height={380}
+          height={440}
           front={<CardFront word={word} isDark={isDark} />}
           back={
             <CardBack
@@ -177,7 +177,7 @@ function CardBack({
       <ScrollView
         style={styles.cardScrollContent}
         contentContainerStyle={styles.cardContentPadded}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
       >
         <Text
           style={[
@@ -203,7 +203,7 @@ function CardBack({
     <ScrollView
       style={styles.cardScrollContent}
       contentContainerStyle={styles.cardContentPadded}
-      showsVerticalScrollIndicator={false}
+      showsVerticalScrollIndicator={true}
     >
       {/* Word (smaller on back) */}
       <Text
@@ -387,7 +387,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   cardContentPadded: {
-    paddingVertical: 4,
+    paddingTop: 4,
+    paddingBottom: 32,
   },
   wordMain: {
     ...Typography.largeTitle,

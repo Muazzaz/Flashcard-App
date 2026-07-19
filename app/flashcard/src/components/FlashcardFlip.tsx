@@ -134,13 +134,13 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     borderRadius: Radii.xl,
-    padding: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 18,
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
+    overflow: 'hidden',
   },
   cardBack: {
     // Back face is positioned on top but starts rotated 180°
