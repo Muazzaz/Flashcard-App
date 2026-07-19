@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState, useMemo } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useWordDetail, useFlashcards } from '@/hooks/useFlashcards';
+import { useWordStore } from '@/stores/wordStore';
+import { useWordDetail } from '@/hooks/useFlashcards';
 import { useHaptics } from '@/hooks/useHaptics';
 import { FlashcardFlip } from '@/components/FlashcardFlip';
 import { ActionButtons } from '@/components/ActionButtons';
@@ -35,8 +36,12 @@ export default function FlashcardDetailScreen() {
   const isDark = scheme === 'dark';
   const { triggerSelection } = useHaptics();
 
-  // Always use 'ALL' words so the card sequence remains stable when states change
-  const { words } = useFlashcards('ALL');
+  // Always sort all words so sequence is 100% stable during reviews
+  const allWords = useWordStore((s) => s.words);
+  const words = useMemo(() => {
+    return [...allWords].sort((a, b) => a.wordText.localeCompare(b.wordText));
+  }, [allWords]);
+
   const { word, isLoadingDefinition, loadDefinition, handleAction } = useWordDetail(currentId);
 
   // Lazy-load definition whenever currentId changes

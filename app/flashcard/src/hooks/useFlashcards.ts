@@ -77,3 +77,5 @@ export function useWordDetail(wordId: string) {
     handleAction,
   };
 }
+
+export default useFlashcards;
