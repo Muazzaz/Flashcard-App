@@ -13,7 +13,7 @@ import { Colors, AppColors, Typography, StateTheme } from '@/constants/theme';
 export default function ReviewingScreen() {
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
-  const { sections, count } = useFlashcards('REVIEWING');
+  const { sections, count } = useFlashcards('ALL');
 
   const header = (
     <View style={styles.header}>
@@ -28,8 +28,8 @@ export default function ReviewingScreen() {
         </Text>
         <Text style={[styles.subtitle, { color: AppColors.textMuted }]}>
           {count > 0
-            ? `${count} word${count !== 1 ? 's' : ''} almost mastered`
-            : 'Words ready for final review appear here'}
+            ? `${count} word${count !== 1 ? 's' : ''} in dictionary`
+            : 'Add words to get started'}
         </Text>
       </View>
       <View style={[styles.stateBadge, { backgroundColor: StateTheme.REVIEWING.lightBg }]}>
@@ -50,7 +50,7 @@ export default function ReviewingScreen() {
     >
       <WordList
         sections={sections}
-        state="REVIEWING"
+        state="ALL"
         ListHeaderComponent={header}
       />
     </SafeAreaView>

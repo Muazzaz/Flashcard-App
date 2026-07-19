@@ -16,7 +16,7 @@ import { Colors, AppColors, Typography, StateTheme } from '@/constants/theme';
 export default function MasteredScreen() {
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
-  const { sections, count } = useFlashcards('MASTERED');
+  const { sections, count } = useFlashcards('ALL');
 
   const header = (
     <View style={styles.header}>
@@ -31,8 +31,8 @@ export default function MasteredScreen() {
         </Text>
         <Text style={[styles.subtitle, { color: AppColors.textMuted }]}>
           {count > 0
-            ? `${count} word${count !== 1 ? 's' : ''} conquered — well done!`
-            : 'Your conquered words will appear here'}
+            ? `${count} word${count !== 1 ? 's' : ''} in dictionary`
+            : 'Add words to get started'}
         </Text>
       </View>
       <View style={[styles.stateBadge, { backgroundColor: StateTheme.MASTERED.lightBg }]}>
@@ -53,7 +53,7 @@ export default function MasteredScreen() {
     >
       <WordList
         sections={sections}
-        state="MASTERED"
+        state="ALL"
         ListHeaderComponent={header}
       />
     </SafeAreaView>

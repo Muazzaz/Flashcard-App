@@ -12,7 +12,7 @@ import { Colors, AppColors, Typography, StateTheme } from '@/constants/theme';
 export default function LearningScreen() {
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
-  const { sections, count } = useFlashcards('LEARNING');
+  const { sections, count } = useFlashcards('ALL');
 
   const header = (
     <View style={styles.header}>
@@ -27,8 +27,8 @@ export default function LearningScreen() {
         </Text>
         <Text style={[styles.subtitle, { color: AppColors.textMuted }]}>
           {count > 0
-            ? `${count} word${count !== 1 ? 's' : ''} in progress`
-            : 'Words you\'re studying appear here'}
+            ? `${count} word${count !== 1 ? 's' : ''} in dictionary`
+            : 'Add words to get started'}
         </Text>
       </View>
       <View style={[styles.stateBadge, { backgroundColor: StateTheme.LEARNING.lightBg }]}>
@@ -49,7 +49,7 @@ export default function LearningScreen() {
     >
       <WordList
         sections={sections}
-        state="LEARNING"
+        state="ALL"
         ListHeaderComponent={header}
       />
     </SafeAreaView>

@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -28,59 +28,61 @@ import type { Word } from '@/types';
  * - State badge showing current state
  */
 export default function FlashcardDetailScreen() {
-  const { id, state } = useLocalSearchParams<{ id: string; state?: string }>();
+  const { id: initialId } = useLocalSearchParams<{ id: string }>();
+  const [currentId, setCurrentId] = useState<string>(initialId!);
   const router = useRouter();
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
   const { triggerSelection } = useHaptics();
 
-  const { word, isLoadingDefinition, loadDefinition, handleAction } = useWordDetail(id!);
-  const { words } = useFlashcards((state as any) || 'ALL');
+  // Always use 'ALL' words so the card sequence remains stable when states change
+  const { words } = useFlashcards('ALL');
+  const { word, isLoadingDefinition, loadDefinition, handleAction } = useWordDetail(currentId);
 
-  // Lazy-load definition when screen opens or when id changes
+  // Lazy-load definition whenever currentId changes
   useEffect(() => {
-    loadDefinition();
-  }, [loadDefinition, id]);
+    if (currentId) {
+      loadDefinition();
+    }
+  }, [currentId, loadDefinition]);
 
-  const currentIndex = words.findIndex((w: Word) => w.id === id);
+  const currentIndex = words.findIndex((w: Word) => w.id === currentId);
   const prevWord = currentIndex > 0 ? words[currentIndex - 1] : null;
   const nextWord = currentIndex >= 0 && currentIndex < words.length - 1 ? words[currentIndex + 1] : null;
 
   const handlePrevCard = useCallback(() => {
     if (prevWord) {
       triggerSelection();
-      router.replace(`/flashcard/${prevWord.id}${state ? `?state=${state}` : ''}` as any);
+      setCurrentId(prevWord.id);
     }
-  }, [prevWord, state, router, triggerSelection]);
+  }, [prevWord, triggerSelection]);
 
   const handleNextCard = useCallback(() => {
     if (nextWord) {
       triggerSelection();
-      router.replace(`/flashcard/${nextWord.id}${state ? `?state=${state}` : ''}` as any);
+      setCurrentId(nextWord.id);
     }
-  }, [nextWord, state, router, triggerSelection]);
+  }, [nextWord, triggerSelection]);
 
   const handleRemembered = useCallback(() => {
     handleAction('remembered');
     if (nextWord) {
-      setTimeout(() => {
-        router.replace(`/flashcard/${nextWord.id}${state ? `?state=${state}` : ''}` as any);
-      }, 150);
+      triggerSelection();
+      setCurrentId(nextWord.id);
     } else {
       setTimeout(() => router.back(), 200);
     }
-  }, [handleAction, nextWord, state, router]);
+  }, [handleAction, nextWord, triggerSelection, router]);
 
   const handleForgot = useCallback(() => {
     handleAction('forgot');
     if (nextWord) {
-      setTimeout(() => {
-        router.replace(`/flashcard/${nextWord.id}${state ? `?state=${state}` : ''}` as any);
-      }, 150);
+      triggerSelection();
+      setCurrentId(nextWord.id);
     } else {
       setTimeout(() => router.back(), 200);
     }
-  }, [handleAction, nextWord, state, router]);
+  }, [handleAction, nextWord, triggerSelection, router]);
 
   const handleReset = useCallback(() => {
     handleAction('reset');
