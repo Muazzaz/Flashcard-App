@@ -55,7 +55,7 @@ export function FlashcardItem({ word, index }: FlashcardItemProps) {
       toggleSelectWord(word.id);
     } else {
       triggerSelection();
-      router.push(`/flashcard/${word.id}` as any);
+      router.push(`/flashcard/${word.id}?state=${word.currentState}` as any);
     }
   }, [isMultiSelectMode, word.id, router, triggerSelection, triggerSoft, toggleSelectWord]);
 
@@ -117,7 +117,7 @@ export function FlashcardItem({ word, index }: FlashcardItemProps) {
           </View>
         )}
 
-        {/* Word content */}
+        {/* Word content — just the word text */}
         <View style={styles.content}>
           <Text
             style={[
@@ -128,19 +128,6 @@ export function FlashcardItem({ word, index }: FlashcardItemProps) {
           >
             {word.wordText}
           </Text>
-
-          {word.banglaMeaning ? (
-            <Text style={[styles.banglaPreview, { color: isDark ? '#A5B4FC' : '#4338CA' }]} numberOfLines={1}>
-              🇧🇩 {word.banglaMeaning}
-            </Text>
-          ) : word.definition ? (
-            <Text
-              style={[styles.preview, { color: AppColors.textMuted }]}
-              numberOfLines={1}
-            >
-              {word.definition.split('\n')[0].replace(/^\([^)]+\)\s*/, '')}
-            </Text>
-          ) : null}
         </View>
 
         {/* State badge */}

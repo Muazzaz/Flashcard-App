@@ -9,12 +9,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useWordDetail } from '@/hooks/useFlashcards';
+import { useWordDetail, useFlashcards } from '@/hooks/useFlashcards';
 import { useHaptics } from '@/hooks/useHaptics';
 import { FlashcardFlip } from '@/components/FlashcardFlip';
 import { ActionButtons } from '@/components/ActionButtons';
 import { DefinitionSkeleton, SynonymsSkeleton } from '@/components/SkeletonLoader';
 import { AppColors, Colors, Radii, Shadows, Spacing, StateTheme, Typography } from '@/constants/theme';
+import type { Word } from '@/types';
 
 /**
  * Flashcard detail screen — presented as a modal.
@@ -27,29 +28,59 @@ import { AppColors, Colors, Radii, Shadows, Spacing, StateTheme, Typography } fr
  * - State badge showing current state
  */
 export default function FlashcardDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, state } = useLocalSearchParams<{ id: string; state?: string }>();
   const router = useRouter();
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
   const { triggerSelection } = useHaptics();
 
   const { word, isLoadingDefinition, loadDefinition, handleAction } = useWordDetail(id!);
+  const { words } = useFlashcards((state as any) || 'ALL');
 
-  // Lazy-load definition when screen opens
+  // Lazy-load definition when screen opens or when id changes
   useEffect(() => {
     loadDefinition();
-  }, [loadDefinition]);
+  }, [loadDefinition, id]);
+
+  const currentIndex = words.findIndex((w: Word) => w.id === id);
+  const prevWord = currentIndex > 0 ? words[currentIndex - 1] : null;
+  const nextWord = currentIndex >= 0 && currentIndex < words.length - 1 ? words[currentIndex + 1] : null;
+
+  const handlePrevCard = useCallback(() => {
+    if (prevWord) {
+      triggerSelection();
+      router.replace(`/flashcard/${prevWord.id}${state ? `?state=${state}` : ''}` as any);
+    }
+  }, [prevWord, state, router, triggerSelection]);
+
+  const handleNextCard = useCallback(() => {
+    if (nextWord) {
+      triggerSelection();
+      router.replace(`/flashcard/${nextWord.id}${state ? `?state=${state}` : ''}` as any);
+    }
+  }, [nextWord, state, router, triggerSelection]);
 
   const handleRemembered = useCallback(() => {
     handleAction('remembered');
-    // Small delay so the user sees the haptic, then dismiss
-    setTimeout(() => router.back(), 200);
-  }, [handleAction, router]);
+    if (nextWord) {
+      setTimeout(() => {
+        router.replace(`/flashcard/${nextWord.id}${state ? `?state=${state}` : ''}` as any);
+      }, 150);
+    } else {
+      setTimeout(() => router.back(), 200);
+    }
+  }, [handleAction, nextWord, state, router]);
 
   const handleForgot = useCallback(() => {
     handleAction('forgot');
-    setTimeout(() => router.back(), 200);
-  }, [handleAction, router]);
+    if (nextWord) {
+      setTimeout(() => {
+        router.replace(`/flashcard/${nextWord.id}${state ? `?state=${state}` : ''}` as any);
+      }, 150);
+    } else {
+      setTimeout(() => router.back(), 200);
+    }
+  }, [handleAction, nextWord, state, router]);
 
   const handleReset = useCallback(() => {
     handleAction('reset');
@@ -102,10 +133,37 @@ export default function FlashcardDetailScreen() {
         <Text style={styles.tapHint}>tap card to flip</Text>
       </View>
 
+      {/* Card Counter & Prev/Next Nav Bar */}
+      <View style={styles.navBar}>
+        <Pressable
+          onPress={handlePrevCard}
+          disabled={!prevWord}
+          style={[styles.navButton, !prevWord && styles.navButtonDisabled]}
+        >
+          <Text style={[styles.navButtonText, { color: prevWord ? AppColors.primary : AppColors.textMuted }]}>
+            ‹ Prev
+          </Text>
+        </Pressable>
+
+        <Text style={[styles.cardCounterText, { color: AppColors.textMuted }]}>
+          {currentIndex >= 0 ? `${currentIndex + 1} of ${words.length}` : ''}
+        </Text>
+
+        <Pressable
+          onPress={handleNextCard}
+          disabled={!nextWord}
+          style={[styles.navButton, !nextWord && styles.navButtonDisabled]}
+        >
+          <Text style={[styles.navButtonText, { color: nextWord ? AppColors.primary : AppColors.textMuted }]}>
+            Next ›
+          </Text>
+        </Pressable>
+      </View>
+
       {/* Flip Card */}
       <View style={styles.cardWrapper}>
         <FlashcardFlip
-          height={440}
+          height={420}
           front={<CardFront word={word} isDark={isDark} />}
           back={
             <CardBack
@@ -341,7 +399,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingVertical: 10,
+  },
+  navBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingVertical: 4,
+  },
+  navButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: Radii.md,
+  },
+  navButtonDisabled: {
+    opacity: 0.35,
+  },
+  navButtonText: {
+    ...Typography.subheadline,
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  cardCounterText: {
+    ...Typography.caption1,
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
   closeButton: {
     width: 36,
