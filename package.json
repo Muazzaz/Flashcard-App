@@ -1,8 +1,8 @@
 {
-  "name": "vocab-app",
+  "name": "Flashcard-App",
   "version": "1.0.0",
   "private": true,
-  "description": "Agency-First Vocabulary App — monorepo containing the React Native frontend and Cloudflare Workers backend.",
+  "description": "Flashcard-App — containing the React Native frontend and Cloudflare Workers backend.",
   "workspaces": [
     "flashcard",
     "backend"
