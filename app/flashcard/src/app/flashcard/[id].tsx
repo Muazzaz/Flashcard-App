@@ -209,14 +209,6 @@ function CardFront({ word, isDark }: { word: NonNullable<ReturnType<typeof useWo
         {word.wordText}
       </Text>
 
-      {word.banglaMeaning ? (
-        <View style={[styles.banglaPill, { backgroundColor: isDark ? 'rgba(79, 70, 229, 0.2)' : '#EEF2FF' }]}>
-          <Text style={[styles.banglaPillText, { color: isDark ? '#A5B4FC' : '#4338CA' }]}>
-            🇧🇩 {word.banglaMeaning}
-          </Text>
-        </View>
-      ) : null}
-
       <Text style={[styles.flipHint, { color: AppColors.textMuted }]}>
         tap to reveal definition
       </Text>
