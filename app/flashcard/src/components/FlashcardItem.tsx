@@ -33,12 +33,13 @@ export function FlashcardItem({ word, index }: FlashcardItemProps) {
   const router = useRouter();
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
-  const { triggerSelection, triggerLongPress, triggerSoft } = useHaptics();
+  const { triggerSelection, triggerLongPress, triggerSoft, triggerWarning } = useHaptics();
 
   const isMultiSelectMode = useWordStore((s) => s.isMultiSelectMode);
   const selectedIds = useWordStore((s) => s.selectedIds);
   const toggleSelectWord = useWordStore((s) => s.toggleSelectWord);
   const setMultiSelectMode = useWordStore((s) => s.setMultiSelectMode);
+  const removeWord = useWordStore((s) => s.removeWord);
 
   const isSelected = selectedIds.includes(word.id);
   const stateTheme = StateTheme[word.currentState];
