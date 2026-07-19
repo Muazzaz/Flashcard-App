@@ -41,6 +41,7 @@ export interface Word {
   wordText: string;
   definition: string | null;
   synonyms: string | null;
+  banglaMeaning?: string | null;
   imageUrl: string | null;
   currentState: WordState;
   createdAt: string;
@@ -79,6 +80,7 @@ export interface ApiWordResponse {
   wordText: string;
   definition: string | null;
   synonyms: string | null;
+  banglaMeaning?: string | null;
   imageUrl: string | null;
   currentState: WordState;
   createdAt: string;

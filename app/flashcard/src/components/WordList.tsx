@@ -8,7 +8,7 @@ import { StateTheme } from '@/constants/theme';
 
 interface WordListProps {
   sections: WordSection[];
-  state: WordState;
+  state: WordState | 'ALL';
   onRefresh?: () => void;
   refreshing?: boolean;
   ListHeaderComponent?: React.ReactElement;
@@ -28,7 +28,10 @@ export function WordList({
 }: WordListProps) {
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
-  const theme = StateTheme[state];
+  const theme =
+    state === 'ALL'
+      ? { color: AppColors.primary, lightBg: AppColors.primary + '20' }
+      : StateTheme[state];
 
   const renderSectionHeader = useCallback(
     ({ section }: { section: WordSection }) => (
@@ -90,15 +93,23 @@ function EmptyState({
   isDark,
   theme,
 }: {
-  state: WordState;
+  state: WordState | 'ALL';
   isDark: boolean;
-  theme: (typeof StateTheme)[WordState];
+  theme: { color: string; lightBg: string };
 }) {
-  const messages: Record<WordState, { title: string; subtitle: string; emoji: string }> = {
-    NEW: {
+  const messages: Record<
+    WordState | 'ALL',
+    { title: string; subtitle: string; emoji: string }
+  > = {
+    ALL: {
       title: 'Your dictionary is empty',
       subtitle: 'Tap the + button to add words\nand start building your vocabulary',
       emoji: '📖',
+    },
+    NEW: {
+      title: 'No new words',
+      subtitle: 'Words marked as NEW will show up here',
+      emoji: '✨',
     },
     LEARNING: {
       title: 'Nothing here yet',

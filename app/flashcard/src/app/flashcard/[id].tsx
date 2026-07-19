@@ -143,6 +143,15 @@ function CardFront({ word, isDark }: { word: NonNullable<ReturnType<typeof useWo
       >
         {word.wordText}
       </Text>
+
+      {word.banglaMeaning ? (
+        <View style={[styles.banglaPill, { backgroundColor: isDark ? 'rgba(79, 70, 229, 0.2)' : '#EEF2FF' }]}>
+          <Text style={[styles.banglaPillText, { color: isDark ? '#A5B4FC' : '#4338CA' }]}>
+            🇧🇩 {word.banglaMeaning}
+          </Text>
+        </View>
+      ) : null}
+
       <Text style={[styles.flipHint, { color: AppColors.textMuted }]}>
         tap to reveal definition
       </Text>
@@ -163,7 +172,7 @@ function CardBack({
   isDark: boolean;
   isLoading: boolean;
 }) {
-  if (isLoading || !word.definition) {
+  if (isLoading || (!word.definition && !word.banglaMeaning)) {
     return (
       <ScrollView
         style={styles.cardScrollContent}
@@ -187,7 +196,7 @@ function CardBack({
   }
 
   // Parse definition lines (format: "(partOfSpeech) definition")
-  const defLines = word.definition.split('\n').filter((l) => l.trim());
+  const defLines = word.definition ? word.definition.split('\n').filter((l) => l.trim()) : [];
   const synonymList = word.synonyms?.split(',').map((s) => s.trim()).filter(Boolean) ?? [];
 
   return (
@@ -206,9 +215,19 @@ function CardBack({
         {word.wordText}
       </Text>
 
+      {/* Bangla Meaning Box */}
+      {word.banglaMeaning ? (
+        <View style={[styles.banglaBox, { backgroundColor: isDark ? 'rgba(79, 70, 229, 0.15)' : '#EEF2FF' }]}>
+          <Text style={styles.banglaBoxLabel}>🇧🇩 বাংলা অর্থ (Bangla Meaning)</Text>
+          <Text style={[styles.banglaBoxText, { color: isDark ? '#A5B4FC' : '#4338CA' }]}>
+            {word.banglaMeaning}
+          </Text>
+        </View>
+      ) : null}
+
       <View style={styles.divider} />
 
-      {/* Definitions */}
+      {/* English Definitions */}
       {defLines.map((line, i) => {
         // Extract part of speech if present: "(noun) definition text"
         const match = line.match(/^\(([^)]+)\)\s*(.*)/);
@@ -288,6 +307,34 @@ function CardBack({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  banglaPill: {
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: Radii.full,
+    marginVertical: 4,
+  },
+  banglaPillText: {
+    ...Typography.body,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  banglaBox: {
+    padding: 12,
+    borderRadius: Radii.md,
+    marginVertical: 8,
+  },
+  banglaBoxLabel: {
+    ...Typography.caption2,
+    fontWeight: '700',
+    color: AppColors.primary,
+    marginBottom: 4,
+    textTransform: 'uppercase',
+  },
+  banglaBoxText: {
+    ...Typography.headline,
+    fontSize: 18,
+    fontWeight: '700',
   },
   header: {
     flexDirection: 'row',

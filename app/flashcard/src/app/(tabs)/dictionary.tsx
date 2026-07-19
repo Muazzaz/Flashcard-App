@@ -19,7 +19,7 @@ import { Colors, AppColors, Typography, Spacing, StateTheme } from '@/constants/
 export default function DictionaryScreen() {
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
-  const { sections, count } = useFlashcards('NEW');
+  const { sections, count } = useFlashcards('ALL');
   const [showAddSheet, setShowAddSheet] = useState(false);
 
   const header = (
@@ -35,12 +35,12 @@ export default function DictionaryScreen() {
         </Text>
         <Text style={[styles.subtitle, { color: AppColors.textMuted }]}>
           {count > 0
-            ? `${count} word${count !== 1 ? 's' : ''} to explore`
+            ? `${count} word${count !== 1 ? 's' : ''} in dictionary`
             : 'Add words to get started'}
         </Text>
       </View>
-      <View style={[styles.stateBadge, { backgroundColor: StateTheme.NEW.lightBg }]}>
-        <Text style={[styles.stateBadgeText, { color: StateTheme.NEW.color }]}>NEW</Text>
+      <View style={[styles.stateBadge, { backgroundColor: AppColors.primary + '20' }]}>
+        <Text style={[styles.stateBadgeText, { color: AppColors.primary }]}>ALL ({count})</Text>
       </View>
     </View>
   );
@@ -55,7 +55,7 @@ export default function DictionaryScreen() {
     >
       <WordList
         sections={sections}
-        state="NEW"
+        state="ALL"
         ListHeaderComponent={header}
       />
 

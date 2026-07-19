@@ -9,14 +9,14 @@ import { groupWordsAlphabetically } from '@/types';
  * Bridges the Zustand store with UI-ready section data,
  * and handles lazy-loading definitions from the Free Dictionary API.
  */
-export function useFlashcards(state: WordState) {
+export function useFlashcards(state?: WordState | 'ALL') {
   const allWords = useWordStore((s) => s.words);
   const updateWordState = useWordStore((s) => s.updateWordState);
   const bulkMarkAsMastered = useWordStore((s) => s.bulkMarkAsMastered);
 
   const words = useMemo(() => {
     return allWords
-      .filter((w) => w.currentState === state)
+      .filter((w) => !state || state === 'ALL' || w.currentState === state)
       .sort((a, b) => a.wordText.localeCompare(b.wordText));
   }, [allWords, state]);
 
@@ -52,7 +52,8 @@ export function useWordDetail(wordId: string) {
         setWordDefinition(
           wordId,
           result.definition,
-          result.synonyms
+          result.synonyms,
+          result.banglaMeaning
         );
       }
     } catch {

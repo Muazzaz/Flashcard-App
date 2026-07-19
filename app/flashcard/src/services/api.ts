@@ -156,53 +156,89 @@ interface FreeDictEntry {
 }
 
 /**
- * Fetches a definition directly from the Free Dictionary API.
+  * Fetches Bangla translation directly from MyMemory Translation API.
+  */
+export async function fetchBanglaTranslation(word: string): Promise<string | null> {
+  try {
+    const clean = word.toLowerCase().trim();
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(clean)}&langpair=en|bn`;
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    const data = await response.json();
+    const text = data?.responseData?.translatedText;
+    if (text && typeof text === 'string' && text.toLowerCase().trim() !== clean) {
+      return text.trim();
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fetches a definition and Bangla translation directly from client APIs.
  * Used in guest mode (no backend needed).
  */
 export async function fetchDefinitionDirect(word: string): Promise<{
   definition: string;
   synonyms: string | null;
+  banglaMeaning: string | null;
   phonetic: string | null;
   example: string | null;
 } | null> {
   try {
-    const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word.toLowerCase().trim())}`;
-    const response = await fetch(url);
+    const cleanWord = word.toLowerCase().trim();
 
-    if (!response.ok) return null;
+    // Fetch Free Dictionary API & Bangla Translation in parallel
+    const [dictRes, banglaMeaning] = await Promise.all([
+      fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleanWord)}`).catch(() => null),
+      fetchBanglaTranslation(cleanWord).catch(() => null),
+    ]);
 
-    const data = (await response.json()) as FreeDictEntry[];
-    const entry = data[0];
-    if (!entry?.meanings?.length) return null;
+    let definition: string | null = null;
+    let synonyms: string | null = null;
+    let phonetic: string | null = null;
+    let example: string | null = null;
 
-    // Collect synonyms
-    const allSynonyms = new Set<string>();
-    for (const meaning of entry.meanings) {
-      for (const syn of meaning.synonyms ?? []) allSynonyms.add(syn);
-      for (const def of meaning.definitions) {
-        for (const syn of def.synonyms ?? []) allSynonyms.add(syn);
+    if (dictRes && dictRes.ok) {
+      const data = (await dictRes.json()) as FreeDictEntry[];
+      const entry = data[0];
+      if (entry?.meanings?.length) {
+        const allSynonyms = new Set<string>();
+        for (const meaning of entry.meanings) {
+          for (const syn of meaning.synonyms ?? []) allSynonyms.add(syn);
+          for (const def of meaning.definitions) {
+            for (const syn of def.synonyms ?? []) allSynonyms.add(syn);
+          }
+        }
+
+        const allDefinitions = entry.meanings
+          .slice(0, 3)
+          .map((m) => {
+            const defs = m.definitions
+              .slice(0, 2)
+              .map((d) => d.definition)
+              .join('; ');
+            return `(${m.partOfSpeech}) ${defs}`;
+          })
+          .join('\n');
+
+        const primaryDef = entry.meanings[0].definitions[0];
+        definition = allDefinitions || primaryDef?.definition || 'No definition available.';
+        synonyms = allSynonyms.size > 0 ? Array.from(allSynonyms).slice(0, 8).join(', ') : null;
+        phonetic = entry.phonetic || entry.phonetics?.find((p) => p.text)?.text || null;
+        example = primaryDef?.example || null;
       }
     }
 
-    // Build rich definition
-    const allDefinitions = entry.meanings
-      .slice(0, 3)
-      .map((m) => {
-        const defs = m.definitions
-          .slice(0, 2)
-          .map((d) => d.definition)
-          .join('; ');
-        return `(${m.partOfSpeech}) ${defs}`;
-      })
-      .join('\n');
-
-    const primaryDef = entry.meanings[0].definitions[0];
+    if (!definition && !banglaMeaning) return null;
 
     return {
-      definition: allDefinitions || primaryDef?.definition || 'No definition available.',
-      synonyms: allSynonyms.size > 0 ? Array.from(allSynonyms).slice(0, 8).join(', ') : null,
-      phonetic: entry.phonetic || entry.phonetics?.find((p) => p.text)?.text || null,
-      example: primaryDef?.example || null,
+      definition: definition || 'No English definition available.',
+      synonyms,
+      banglaMeaning,
+      phonetic,
+      example,
     };
   } catch {
     return null;

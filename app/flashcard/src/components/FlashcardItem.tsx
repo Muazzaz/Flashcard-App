@@ -129,14 +129,18 @@ export function FlashcardItem({ word, index }: FlashcardItemProps) {
             {word.wordText}
           </Text>
 
-          {word.definition && (
+          {word.banglaMeaning ? (
+            <Text style={[styles.banglaPreview, { color: isDark ? '#A5B4FC' : '#4338CA' }]} numberOfLines={1}>
+              🇧🇩 {word.banglaMeaning}
+            </Text>
+          ) : word.definition ? (
             <Text
               style={[styles.preview, { color: AppColors.textMuted }]}
               numberOfLines={1}
             >
               {word.definition.split('\n')[0].replace(/^\([^)]+\)\s*/, '')}
             </Text>
-          )}
+          ) : null}
         </View>
 
         {/* State badge */}
@@ -204,6 +208,10 @@ const styles = StyleSheet.create({
   preview: {
     ...Typography.caption1,
     fontWeight: '400',
+  },
+  banglaPreview: {
+    ...Typography.caption1,
+    fontWeight: '600',
   },
   badge: {
     width: 28,

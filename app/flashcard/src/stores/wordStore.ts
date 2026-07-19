@@ -57,21 +57,26 @@ interface WordStore {
   addWords: (texts: string[]) => void;
   updateWordState: (wordId: string, action: ProgressAction) => void;
   bulkMarkAsMastered: (wordIds: string[]) => void;
-  setWordDefinition: (wordId: string, definition: string, synonyms: string | null) => void;
+  setWordDefinition: (
+    wordId: string,
+    definition: string,
+    synonyms: string | null,
+    banglaMeaning?: string | null
+  ) => void;
   removeWord: (wordId: string) => void;
 
   // ---- Selection Actions ----
   toggleSelectWord: (wordId: string) => void;
   setMultiSelectMode: (active: boolean) => void;
   clearSelection: () => void;
-  selectAll: (state: WordState) => void;
+  selectAll: (state?: WordState | 'ALL') => void;
 
   // ---- Auth Actions ----
   setAuth: (token: string, user: { id: string; name: string; email: string; image?: string }) => void;
   clearAuth: () => void;
 
   // ---- Computed Getters ----
-  getWordsByState: (state: WordState) => Word[];
+  getWordsByState: (state?: WordState | 'ALL') => Word[];
   getWordById: (id: string) => Word | undefined;
   getCountByState: (state: WordState) => number;
 }
@@ -187,10 +192,15 @@ export const useWordStore = create<WordStore>()(
         }
       },
 
-      setWordDefinition: (wordId: string, definition: string, synonyms: string | null) => {
+      setWordDefinition: (
+        wordId: string,
+        definition: string,
+        synonyms: string | null,
+        banglaMeaning?: string | null
+      ) => {
         set((state) => ({
           words: state.words.map((w) =>
-            w.id === wordId ? { ...w, definition, synonyms } : w
+            w.id === wordId ? { ...w, definition, synonyms, banglaMeaning } : w
           ),
         }));
       },
@@ -223,9 +233,9 @@ export const useWordStore = create<WordStore>()(
         set({ selectedIds: [], isMultiSelectMode: false });
       },
 
-      selectAll: (state: WordState) => {
+      selectAll: (state?: WordState | 'ALL') => {
         const ids = get()
-          .words.filter((w) => w.currentState === state)
+          .words.filter((w) => !state || state === 'ALL' || w.currentState === state)
           .map((w) => w.id);
         set({ selectedIds: ids });
       },
@@ -256,9 +266,9 @@ export const useWordStore = create<WordStore>()(
 
       // ---- Computed Getters ----
 
-      getWordsByState: (state: WordState) => {
+      getWordsByState: (state?: WordState | 'ALL') => {
         return get()
-          .words.filter((w) => w.currentState === state)
+          .words.filter((w) => !state || state === 'ALL' || w.currentState === state)
           .sort((a, b) => a.wordText.localeCompare(b.wordText));
       },
 
