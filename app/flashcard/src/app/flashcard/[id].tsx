@@ -89,6 +89,19 @@ export default function FlashcardDetailScreen() {
     }
   }, [handleAction, nextWord, triggerSelection, router]);
 
+  const removeWord = useWordStore((s) => s.removeWord);
+
+  const handleDeleteWord = useCallback(() => {
+    if (!word) return;
+    removeWord(word.id);
+    if (nextWord) {
+      triggerSelection();
+      setCurrentId(nextWord.id);
+    } else {
+      setTimeout(() => router.back(), 150);
+    }
+  }, [word, removeWord, nextWord, triggerSelection, router]);
+
   const handleReset = useCallback(() => {
     handleAction('reset');
   }, [handleAction]);
@@ -187,6 +200,7 @@ export default function FlashcardDetailScreen() {
         onRemembered={handleRemembered}
         onForgot={handleForgot}
         onReset={handleReset}
+        onDelete={handleDeleteWord}
         showReset={word.currentState !== 'NEW'}
       />
     </SafeAreaView>
