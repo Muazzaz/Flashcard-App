@@ -146,6 +146,21 @@ export function FlashcardItem({ word, index }: FlashcardItemProps) {
           </View>
         )}
 
+        {/* Delete button */}
+        {!isMultiSelectMode && (
+          <Pressable
+            onPress={(e) => {
+              e.stopPropagation();
+              triggerWarning();
+              removeWord(word.id);
+            }}
+            hitSlop={8}
+            style={styles.deleteButton}
+          >
+            <Text style={styles.deleteIcon}>🗑️</Text>
+          </Pressable>
+        )}
+
         {/* Chevron */}
         {!isMultiSelectMode && (
           <Text style={[styles.chevron, { color: AppColors.textMuted }]}>›</Text>
@@ -215,7 +230,16 @@ const styles = StyleSheet.create({
   chevron: {
     fontSize: 22,
     fontWeight: '300',
-    paddingRight: 12,
-    paddingLeft: 4,
+    paddingRight: 10,
+    paddingLeft: 2,
+  },
+  deleteButton: {
+    paddingHorizontal: 6,
+    paddingVertical: 6,
+    marginRight: 2,
+  },
+  deleteIcon: {
+    fontSize: 14,
+    opacity: 0.65,
   },
 });
