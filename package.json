@@ -4,16 +4,17 @@
   "private": true,
   "description": "Flashcard-App — containing the React Native frontend and Cloudflare Workers backend.",
   "workspaces": [
-    "flashcard",
-    "backend"
+    "app/flashcard",
+    "app/backend"
   ],
   "scripts": {
     "app": "npm run start --workspace=flashcard",
     "app:android": "npm run android --workspace=flashcard",
     "app:ios": "npm run ios --workspace=flashcard",
-    "api": "npm run dev --workspace=backend",
-    "api:deploy": "npm run deploy --workspace=backend",
-    "db:generate": "npm run db:generate --workspace=backend",
-    "db:push": "npm run db:push --workspace=backend"
+    "app:web": "npm run web --workspace=flashcard",
+    "api": "npm run dev --workspace=vocab-api",
+    "api:deploy": "npm run deploy --workspace=vocab-api",
+    "db:generate": "npm run db:generate --workspace=vocab-api",
+    "db:push": "npm run db:push --workspace=vocab-api"
   }
 }
