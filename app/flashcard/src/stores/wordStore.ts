@@ -11,6 +11,53 @@ import {
 import { api } from '@/services/api';
 
 // ============================================
+// Default Words (pre-seeded for new users)
+// ============================================
+
+const DEFAULT_WORD_TEXTS = [
+  'aberrant',
+  'benevolent',
+  'candid',
+  'daunting',
+  'eloquent',
+  'fastidious',
+  'gratuitous',
+  'harangue',
+  'impeccable',
+  'jubilant',
+  'laconic',
+  'meticulous',
+  'nonchalant',
+  'oblivious',
+  'pragmatic',
+  'querulous',
+  'resilient',
+  'serendipity',
+  'tenacious',
+  'ubiquitous',
+  'verbose',
+  'whimsical',
+  'xenial',
+  'zealous',
+  'ambiguous',
+  'diligent',
+  'ephemeral',
+  'frugal',
+  'inquisitive',
+  'melancholy',
+];
+
+const DEFAULT_WORDS: Word[] = DEFAULT_WORD_TEXTS.map((wordText, index) => ({
+  id: `default_${index}`,
+  wordText,
+  definition: null,
+  synonyms: null,
+  imageUrl: null,
+  currentState: 'NEW' as WordState,
+  createdAt: new Date(0).toISOString(), // epoch so user words sort after
+}));
+
+// ============================================
 // Toast Store (lightweight, separate concern)
 // ============================================
 
@@ -86,7 +133,7 @@ export const useWordStore = create<WordStore>()(
   persist(
     (set, get) => ({
       // ---- Initial State ----
-      words: [],
+      words: DEFAULT_WORDS,
       selectedIds: [],
       isMultiSelectMode: false,
       authToken: null,
